@@ -1,0 +1,26 @@
+name: Update
+
+on:
+  push:
+  schedule:
+    - cron: 0,30 * * * *
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Update
+      run: |
+        rm -f Adult.m3u && wget https://adultiptv.net/chs.m3u -O Adult.m3u
+        rm -f IPTV.m3u && wget https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/index.m3u -O IPTV.m3u
+        rm -f EPG.xml && wget http://epg.51zmt.top:8000/e.xml -O EPG.xml
+        echo `date +"%Y-%m-%d %H:%M:%S"` Finish > README.md
+        git config --global user.name TCatCloud
+        git config --global user.email tcatmoexin@gmail.com
+        git checkout --orphan latest_branch
+        git add -A
+        git commit -am "Update"
+        git branch -D Files
+        git branch -m Files
+        git push -f origin Files
